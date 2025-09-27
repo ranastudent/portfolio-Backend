@@ -1,0 +1,96 @@
+// Datasource: PostgreSQL
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Generator: Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// =============================
+// MODELS
+// =============================
+
+// 1️⃣ User Model
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  blogs     Blog[]
+  projects  Project[]
+  resumes   Resume[]
+}
+
+// Enum for roles
+enum Role {
+  USER
+  ADMIN
+}
+
+// 2️⃣ Blog Model
+model Blog {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  content     String
+  seoTitle    String?
+  seoDesc     String?
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  author User @relation(fields: [authorId], references: [id])
+}
+
+// 3️⃣ Project Model
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String
+  features    String[]
+  thumbnail   String?
+  liveLink    String?
+  repoLink    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId  String
+  user    User @relation(fields: [userId], references: [id])
+}
+
+// 4️⃣ About Me Model (single entry, editable by admin)
+model About {
+  id        String   @id @default(uuid())
+  name      String
+  bio       String
+  email     String
+  contact   String?
+  skills    String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 5️⃣ Resume Model
+model Resume {
+  id          String   @id @default(uuid())
+  userId      String
+  contactInfo Json
+  workExp     Json
+  education   Json
+  skills      String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
