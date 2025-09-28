@@ -78,6 +78,29 @@ export class AuthService {
     };
   }
 
+  static async googleAuth(user: any) {
+  // issue JWT for Google users
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    process.env.JWT_SECRET as string,
+    { expiresIn: process.env.JWT_EXPIRES_IN || "1d" } as SignOptions
+  );
+
+  return {
+    success: true,
+    message: "Google login successful",
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  };
+}
+
+
+
   static async getProfile(userId: string) {
     const user = await prisma.user.findUnique({
       where: { id: userId },

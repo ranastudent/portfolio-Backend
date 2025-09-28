@@ -20,6 +20,16 @@ export class AuthController {
     }
   }
 
+  static async googleCallback(req: Request, res: Response) {
+  try {
+    const result = await AuthService.googleAuth(req.user);
+    res.json(result);
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+}
+
+
   static async getProfile(req: Request, res: Response) {
     try {
       const userId = (req as any).user.id; // from middleware
