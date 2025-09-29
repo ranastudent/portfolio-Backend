@@ -3,6 +3,7 @@ export interface CreateBlogInput {
   description: string;
   content: string; // rich text
   tags?: string[];
+  image?: string;
 }
 
 export interface UpdateBlogInput {
@@ -10,4 +11,5 @@ export interface UpdateBlogInput {
   description?: string;
   content?: string;
   tags?: string[];
+  image?: string;
 }

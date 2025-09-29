@@ -42,6 +42,7 @@ model Blog {
   slug        String   @unique
   description String? 
   tags        String[]
+  image       String?
   content     String
   seoTitle    String?
   seoDesc     String?
