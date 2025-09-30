@@ -34,4 +34,15 @@ export class AboutService {
       data,
     });
   }
+
+  static async delete() {
+    const about = await prisma.about.findFirst();
+    if (!about) throw new Error("About info not found to delete.");
+
+    await prisma.about.delete({
+      where: { id: about.id },
+    });
+
+    return { message: "About info deleted successfully" };
+  }
 }

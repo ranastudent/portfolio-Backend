@@ -10,5 +10,6 @@ router.get("/", AboutController.get);
 // Private (admin only)
 router.post("/", authMiddleware(["ADMIN"]), AboutController.create);
 router.patch("/", authMiddleware(["ADMIN"]), AboutController.update);
+router.delete("/", authMiddleware(["ADMIN"]), AboutController.delete);
 
 export default router;

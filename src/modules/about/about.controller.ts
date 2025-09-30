@@ -52,4 +52,19 @@ export class AboutController {
       res.status(500).json({ message: error.message });
     }
   }
+
+  static async delete(req: Request, res: Response) {
+    try {
+      const user = (req as any).user;
+      if (user.role !== "ADMIN") {
+        return res.status(403).json({ message: "Only admin can delete about info" });
+      }
+
+      const result = await AboutService.delete();
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+ 
 }

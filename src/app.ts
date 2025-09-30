@@ -3,6 +3,7 @@ import routes from "./routes";
 import cors from "cors";
 import passport from "passport";
 import "./config/passport";
+import { errorHandler } from "./middlewares/error.middleware";
 
 const app = express();
 
@@ -12,5 +13,8 @@ app.use(passport.initialize());
 
 // API routes
 app.use("/api", routes);
+
+// Centralized error handler (must be last)
+app.use(errorHandler);
 
 export default app;

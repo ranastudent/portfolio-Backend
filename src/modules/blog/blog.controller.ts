@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { BlogService } from "./blog.service";
 import { createBlogSchema, updateBlogSchema } from "./blog.validation";
+import prisma from "../../utils/prisma";
 
 export class BlogController {
   static async create(req: Request, res: Response) {
@@ -26,14 +27,22 @@ export class BlogController {
   }
 
   static async getById(req: Request, res: Response) {
-    try {
-      const blog = await BlogService.getById(req.params.id);
-      if (!blog) return res.status(404).json({ message: "Blog not found" });
-      res.json(blog);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
+  try {
+    const blog = await BlogService.getById(req.params.id);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+    // Increment view count
+    await prisma.blog.update({
+      where: { id: blog.id },
+      data: { views: { increment: 1 } },
+    });
+
+    res.json(blog);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
+}
+
 
   static async update(req: Request, res: Response) {
     try {
