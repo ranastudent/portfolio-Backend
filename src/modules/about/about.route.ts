@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AboutController } from "./about.controller";
 import { authMiddleware } from "../../middlewares/auth.middleware";
+import { upload } from "../../middlewares/upload.middleware";
 
 const router = Router();
 
@@ -8,7 +9,7 @@ const router = Router();
 router.get("/", AboutController.get);
 
 // Private (admin only)
-router.post("/", authMiddleware(["ADMIN"]), AboutController.create);
+router.post("/", authMiddleware(["ADMIN"]),upload.single("image"), AboutController.create);
 router.patch("/", authMiddleware(["ADMIN"]), AboutController.update);
 router.delete("/", authMiddleware(["ADMIN"]), AboutController.delete);
 

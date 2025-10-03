@@ -21,6 +21,7 @@ export class AboutService {
         email: data.email,
         contact: data.contact,
         skills: data.skills ?? [],
+        image: data.image,
       },
     });
   }

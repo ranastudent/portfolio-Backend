@@ -17,16 +17,23 @@ export class AboutController {
   static async create(req: Request, res: Response) {
     try {
       const parseResult = createAboutSchema.safeParse(req.body);
+
       if (!parseResult.success) {
         return res.status(400).json(parseResult.error.issues);
       }
 
       const user = (req as any).user;
       if (user.role !== "ADMIN") {
-        return res.status(403).json({ message: "Only admin can create about info" });
+        return res
+          .status(403)
+          .json({ message: "Only admin can create about info" });
       }
 
-      const about = await AboutService.create(parseResult.data);
+      const bodyData = parseResult.data;
+      if (req.file) {
+        bodyData.image = `/uploads/${req.file.filename}`; // local file path
+      }
+      const about = await AboutService.create(bodyData);
       res.status(201).json(about);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -43,7 +50,9 @@ export class AboutController {
 
       const user = (req as any).user;
       if (user.role !== "ADMIN") {
-        return res.status(403).json({ message: "Only admin can update about info" });
+        return res
+          .status(403)
+          .json({ message: "Only admin can update about info" });
       }
 
       const about = await AboutService.update(parseResult.data);
@@ -57,7 +66,9 @@ export class AboutController {
     try {
       const user = (req as any).user;
       if (user.role !== "ADMIN") {
-        return res.status(403).json({ message: "Only admin can delete about info" });
+        return res
+          .status(403)
+          .json({ message: "Only admin can delete about info" });
       }
 
       const result = await AboutService.delete();
@@ -66,5 +77,4 @@ export class AboutController {
       res.status(500).json({ message: error.message });
     }
   }
- 
 }

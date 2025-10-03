@@ -84,6 +84,7 @@ model About {
   skills    String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  image     String?
 }
 
 // 5️⃣ Resume Model

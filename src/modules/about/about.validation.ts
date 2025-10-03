@@ -7,6 +7,7 @@ export const createAboutSchema = z.object({
   email: z.string().email("Invalid email"),
   contact: z.string().optional(),
   skills: z.array(z.string()).optional(),
+  image: z.string().url("Invalid image URL").optional(),
 });
 
 // Update: all optional
