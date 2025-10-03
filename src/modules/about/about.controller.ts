@@ -1,29 +1,40 @@
 import { Request, Response } from "express";
+import path from "path";
+import fs from "fs";
 import { AboutService } from "./about.service";
 import { createAboutSchema, updateAboutSchema } from "./about.validation";
+
+// Ensure uploads folder exists
+const uploadDir = path.join(__dirname, "../../uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 export class AboutController {
   // Get About info
   static async get(req: Request, res: Response) {
     try {
       const about = await AboutService.get();
+
+      // Optional: make image URL absolute
+      if (about?.image) {
+        about.image = `${req.protocol}://${req.get("host")}${about.image}`;
+      }
+
       res.json(about);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   }
 
-  // Create About info (only once, ADMIN only)
+  // Create About info (ADMIN only)
   static async create(req: Request, res: Response) {
     try {
       const user = (req as any).user;
       if (user.role !== "ADMIN") {
-        return res
-          .status(403)
-          .json({ message: "Only admin can create about info" });
+        return res.status(403).json({ message: "Only admin can create about info" });
       }
 
-      // Handle skills safely
       const skills: string[] =
         typeof req.body.skills === "string"
           ? req.body.skills.split(",").map((s: string) => s.trim())
@@ -46,6 +57,12 @@ export class AboutController {
       }
 
       const about = await AboutService.create(parseResult.data);
+
+      // Return absolute image URL
+      if (about.image) {
+        about.image = `${req.protocol}://${req.get("host")}${about.image}`;
+      }
+
       res.status(201).json(about);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -57,12 +74,9 @@ export class AboutController {
     try {
       const user = (req as any).user;
       if (user.role !== "ADMIN") {
-        return res
-          .status(403)
-          .json({ message: "Only admin can update about info" });
+        return res.status(403).json({ message: "Only admin can update about info" });
       }
 
-      // Handle skills safely
       const skills: string[] | undefined =
         typeof req.body.skills === "string"
           ? req.body.skills.split(",").map((s: string) => s.trim())
@@ -85,6 +99,11 @@ export class AboutController {
       }
 
       const about = await AboutService.update(parseResult.data);
+
+      if (about.image) {
+        about.image = `${req.protocol}://${req.get("host")}${about.image}`;
+      }
+
       res.json(about);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -96,9 +115,7 @@ export class AboutController {
     try {
       const user = (req as any).user;
       if (user.role !== "ADMIN") {
-        return res
-          .status(403)
-          .json({ message: "Only admin can delete about info" });
+        return res.status(403).json({ message: "Only admin can delete about info" });
       }
 
       const result = await AboutService.delete();
