@@ -1,14 +1,6 @@
 import { Request, Response } from "express";
-import path from "path";
-import fs from "fs";
 import { AboutService } from "./about.service";
 import { createAboutSchema, updateAboutSchema } from "./about.validation";
-
-// Ensure uploads folder exists
-const uploadDir = path.join(__dirname, "../../uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
 
 export class AboutController {
   // Get About info
@@ -16,7 +8,7 @@ export class AboutController {
     try {
       const about = await AboutService.get();
 
-      // Optional: make image URL absolute
+      // Optional: prepend host to image URL if exists
       if (about?.image) {
         about.image = `${req.protocol}://${req.get("host")}${about.image}`;
       }
@@ -35,6 +27,7 @@ export class AboutController {
         return res.status(403).json({ message: "Only admin can create about info" });
       }
 
+      // Parse skills from string or array
       const skills: string[] =
         typeof req.body.skills === "string"
           ? req.body.skills.split(",").map((s: string) => s.trim())
@@ -48,21 +41,15 @@ export class AboutController {
         email: req.body.email,
         contact: req.body.contact,
         skills,
-        image: req.file ? `/uploads/${req.file.filename}` : undefined,
+        image: req.body.image || null, // JSON expects URL string
       };
 
       const parseResult = createAboutSchema.safeParse(bodyData);
       if (!parseResult.success) {
-        return res.status(400).json(parseResult.error.issues);
+        return res.status(400).json({ errors: parseResult.error.issues });
       }
 
       const about = await AboutService.create(parseResult.data);
-
-      // Return absolute image URL
-      if (about.image) {
-        about.image = `${req.protocol}://${req.get("host")}${about.image}`;
-      }
-
       res.status(201).json(about);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -90,20 +77,15 @@ export class AboutController {
         email: req.body.email,
         contact: req.body.contact,
         skills,
-        image: req.file ? `/uploads/${req.file.filename}` : undefined,
+        image: req.body.image || undefined, // JSON expects URL string
       };
 
       const parseResult = updateAboutSchema.safeParse(bodyData);
       if (!parseResult.success) {
-        return res.status(400).json(parseResult.error.issues);
+        return res.status(400).json({ errors: parseResult.error.issues });
       }
 
       const about = await AboutService.update(parseResult.data);
-
-      if (about.image) {
-        about.image = `${req.protocol}://${req.get("host")}${about.image}`;
-      }
-
       res.json(about);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
