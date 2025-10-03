@@ -23,19 +23,23 @@ export class AboutController {
           .json({ message: "Only admin can create about info" });
       }
 
-      // Build body manually because req.body from multipart/form-data are strings
+      // Handle skills safely
+      const skills: string[] =
+        typeof req.body.skills === "string"
+          ? req.body.skills.split(",").map((s: string) => s.trim())
+          : Array.isArray(req.body.skills)
+          ? req.body.skills.map((s: string) => s.trim())
+          : [];
+
       const bodyData = {
         name: req.body.name,
         bio: req.body.bio,
         email: req.body.email,
         contact: req.body.contact,
-        skills: req.body.skills
-          ? req.body.skills.split(",").map((skill: string) => skill.trim())
-          : [],
+        skills,
         image: req.file ? `/uploads/${req.file.filename}` : undefined,
       };
 
-      // Validate with Zod
       const parseResult = createAboutSchema.safeParse(bodyData);
       if (!parseResult.success) {
         return res.status(400).json(parseResult.error.issues);
@@ -58,19 +62,23 @@ export class AboutController {
           .json({ message: "Only admin can update about info" });
       }
 
-      // Build body manually for multipart/form-data
+      // Handle skills safely
+      const skills: string[] | undefined =
+        typeof req.body.skills === "string"
+          ? req.body.skills.split(",").map((s: string) => s.trim())
+          : Array.isArray(req.body.skills)
+          ? req.body.skills.map((s: string) => s.trim())
+          : undefined;
+
       const bodyData = {
         name: req.body.name,
         bio: req.body.bio,
         email: req.body.email,
         contact: req.body.contact,
-        skills: req.body.skills
-          ? req.body.skills.split(",").map((skill: string) => skill.trim())
-          : undefined,
+        skills,
         image: req.file ? `/uploads/${req.file.filename}` : undefined,
       };
 
-      // Validate
       const parseResult = updateAboutSchema.safeParse(bodyData);
       if (!parseResult.success) {
         return res.status(400).json(parseResult.error.issues);
