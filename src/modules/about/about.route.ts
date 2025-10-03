@@ -10,7 +10,7 @@ router.get("/", AboutController.get);
 
 // Private (admin only)
 router.post("/", authMiddleware(["ADMIN"]),upload.single("image"), AboutController.create);
-router.patch("/", authMiddleware(["ADMIN"]), AboutController.update);
+router.patch("/", authMiddleware(["ADMIN"]),upload.single("image"),AboutController.update);
 router.delete("/", authMiddleware(["ADMIN"]), AboutController.delete);
 
 export default router;

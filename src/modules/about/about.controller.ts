@@ -16,12 +16,6 @@ export class AboutController {
   // Create About info (only once, ADMIN only)
   static async create(req: Request, res: Response) {
     try {
-      const parseResult = createAboutSchema.safeParse(req.body);
-
-      if (!parseResult.success) {
-        return res.status(400).json(parseResult.error.issues);
-      }
-
       const user = (req as any).user;
       if (user.role !== "ADMIN") {
         return res
@@ -29,11 +23,25 @@ export class AboutController {
           .json({ message: "Only admin can create about info" });
       }
 
-      const bodyData = parseResult.data;
-      if (req.file) {
-        bodyData.image = `/uploads/${req.file.filename}`; // local file path
+      // Build body manually because req.body from multipart/form-data are strings
+      const bodyData = {
+        name: req.body.name,
+        bio: req.body.bio,
+        email: req.body.email,
+        contact: req.body.contact,
+        skills: req.body.skills
+          ? req.body.skills.split(",").map((skill: string) => skill.trim())
+          : [],
+        image: req.file ? `/uploads/${req.file.filename}` : undefined,
+      };
+
+      // Validate with Zod
+      const parseResult = createAboutSchema.safeParse(bodyData);
+      if (!parseResult.success) {
+        return res.status(400).json(parseResult.error.issues);
       }
-      const about = await AboutService.create(bodyData);
+
+      const about = await AboutService.create(parseResult.data);
       res.status(201).json(about);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -43,16 +51,29 @@ export class AboutController {
   // Update About info (ADMIN only)
   static async update(req: Request, res: Response) {
     try {
-      const parseResult = updateAboutSchema.safeParse(req.body);
-      if (!parseResult.success) {
-        return res.status(400).json(parseResult.error.issues);
-      }
-
       const user = (req as any).user;
       if (user.role !== "ADMIN") {
         return res
           .status(403)
           .json({ message: "Only admin can update about info" });
+      }
+
+      // Build body manually for multipart/form-data
+      const bodyData = {
+        name: req.body.name,
+        bio: req.body.bio,
+        email: req.body.email,
+        contact: req.body.contact,
+        skills: req.body.skills
+          ? req.body.skills.split(",").map((skill: string) => skill.trim())
+          : undefined,
+        image: req.file ? `/uploads/${req.file.filename}` : undefined,
+      };
+
+      // Validate
+      const parseResult = updateAboutSchema.safeParse(bodyData);
+      if (!parseResult.success) {
+        return res.status(400).json(parseResult.error.issues);
       }
 
       const about = await AboutService.update(parseResult.data);
@@ -62,6 +83,7 @@ export class AboutController {
     }
   }
 
+  // Delete About info (ADMIN only)
   static async delete(req: Request, res: Response) {
     try {
       const user = (req as any).user;
