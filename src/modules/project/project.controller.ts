@@ -1,8 +1,23 @@
 import { Request, Response } from "express";
 import { ProjectService } from "./project.service";
 import { createProjectSchema, updateProjectSchema } from "./project.validation";
+import { fixOldImageUrls } from "../../middlewares/fixImageUrl";
 
 export class ProjectController {
+
+   static async fixOldUrls(req: Request, res: Response) {
+    try {
+      const user = (req as any).user;
+      if (user.role !== "ADMIN")
+        return res.status(403).json({ message: "Only admin can perform this action" });
+
+      const count = await fixOldImageUrls();
+      res.json({ message: `✅ Fixed ${count} invalid image URLs.` });
+    } catch (error: any) {
+      console.error("Error fixing image URLs:", error);
+      res.status(500).json({ message: "Failed to fix image URLs", error: error.message });
+    }
+  }
 
   // CREATE project
   static async create(req: Request, res: Response) {

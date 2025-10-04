@@ -4,7 +4,7 @@ import cors from "cors";
 import passport from "passport";
 import "./config/passport";
 import { errorHandler } from "./middlewares/error.middleware";
-import { fixImageUrl } from "./middlewares/fixImageUrl";
+
 
 const app = express();
 
@@ -18,7 +18,7 @@ app.use(
 );
 app.use(express.json());
 app.use(passport.initialize());
-app.use(fixImageUrl);
+
 
 // API routes
 app.use("/api", routes);

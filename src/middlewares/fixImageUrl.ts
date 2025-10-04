@@ -1,19 +1,22 @@
-import { Request, Response, NextFunction } from "express";
+import { PrismaClient } from "@prisma/client";
 
-export const fixImageUrl = (req: Request, _res: Response, next: NextFunction): void => {
-  try {
-    const imageFields = ["thumbnail", "image", "banner", "profileImage"];
+const prisma = new PrismaClient();
 
-    for (const field of imageFields) {
-      const value = (req.body as Record<string, string>)[field];
-      if (typeof value === "string" && value.includes("i.ibb.co.com")) {
-        (req.body as Record<string, string>)[field] = value.replace("i.ibb.co.com", "i.ibb.co");
-      }
+export async function fixOldImageUrls() {
+  const projects = await prisma.project.findMany();
+  let fixedCount = 0;
+
+  for (const project of projects) {
+    if (project.thumbnail?.includes("i.ibb.co.com")) {
+      const fixedThumbnail = project.thumbnail.replace("i.ibb.co.com", "i.ibb.co");
+      await prisma.project.update({
+        where: { id: project.id },
+        data: { thumbnail: fixedThumbnail },
+      });
+      fixedCount++;
+      console.log(`✅ Fixed thumbnail for project: ${project.title}`);
     }
-
-    next();
-  } catch (error) {
-    console.error("Error in fixImageUrl middleware:", error);
-    next();
   }
-};
+
+  return fixedCount;
+}
