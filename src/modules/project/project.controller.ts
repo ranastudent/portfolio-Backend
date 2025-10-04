@@ -4,18 +4,21 @@ import { createProjectSchema, updateProjectSchema } from "./project.validation";
 import { fixOldImageUrls } from "../../middlewares/fixImageUrl";
 
 export class ProjectController {
-
-   static async fixOldUrls(req: Request, res: Response) {
+  static async fixOldUrls(req: Request, res: Response) {
     try {
       const user = (req as any).user;
       if (user.role !== "ADMIN")
-        return res.status(403).json({ message: "Only admin can perform this action" });
+        return res
+          .status(403)
+          .json({ message: "Only admin can perform this action" });
 
       const count = await fixOldImageUrls();
       res.json({ message: `✅ Fixed ${count} invalid image URLs.` });
     } catch (error: any) {
       console.error("Error fixing image URLs:", error);
-      res.status(500).json({ message: "Failed to fix image URLs", error: error.message });
+      res
+        .status(500)
+        .json({ message: "Failed to fix image URLs", error: error.message });
     }
   }
 
@@ -28,7 +31,9 @@ export class ProjectController {
 
       const user = (req as any).user;
       if (user.role !== "ADMIN")
-        return res.status(403).json({ message: "Only admin can create projects" });
+        return res
+          .status(403)
+          .json({ message: "Only admin can create projects" });
 
       // Take thumbnail URL from JSON body
       const project = await ProjectService.create(user.id, parseResult.data);
@@ -52,7 +57,8 @@ export class ProjectController {
   static async getById(req: Request, res: Response) {
     try {
       const project = await ProjectService.getById(req.params.id);
-      if (!project) return res.status(404).json({ message: "Project not found" });
+      if (!project)
+        return res.status(404).json({ message: "Project not found" });
       res.json(project);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -68,10 +74,15 @@ export class ProjectController {
 
       const user = (req as any).user;
       if (user.role !== "ADMIN")
-        return res.status(403).json({ message: "Only admin can update projects" });
+        return res
+          .status(403)
+          .json({ message: "Only admin can update projects" });
 
       // Use thumbnail URL from JSON body
-      const project = await ProjectService.update(req.params.id, parseResult.data);
+      const project = await ProjectService.update(
+        req.params.id,
+        parseResult.data
+      );
       res.json(project);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -83,7 +94,9 @@ export class ProjectController {
     try {
       const user = (req as any).user;
       if (user.role !== "ADMIN")
-        return res.status(403).json({ message: "Only admin can delete projects" });
+        return res
+          .status(403)
+          .json({ message: "Only admin can delete projects" });
 
       await ProjectService.delete(req.params.id);
       res.json({ message: "Project deleted successfully" });

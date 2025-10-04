@@ -4,6 +4,10 @@ import { CreateProjectInput, UpdateProjectInput } from "./project.interface";
 
 export class ProjectService {
   static async create(userId: string, data: CreateProjectInput) {
+     // ✅ Fix invalid i.ibb.co URLs automatically
+    if (data.thumbnail?.includes("i.ibb.co.com")) {
+      data.thumbnail = data.thumbnail.replace("i.ibb.co.com", "i.ibb.co");
+    }
     return prisma.project.create({
       data: {
         ...data,
@@ -35,6 +39,10 @@ export class ProjectService {
   }
 
   static async update(id: string, data: UpdateProjectInput) {
+     // ✅ Fix invalid i.ibb.co URLs automatically
+    if (data.thumbnail?.includes("i.ibb.co.com")) {
+      data.thumbnail = data.thumbnail.replace("i.ibb.co.com", "i.ibb.co");
+    }
     return prisma.project.update({ where: { id }, data });
   }
 
