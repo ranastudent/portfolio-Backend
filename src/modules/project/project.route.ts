@@ -18,15 +18,17 @@ const upload = multer({ storage });
 router.get("/", ProjectController.getAll);
 router.get("/:id", ProjectController.getById);
 
-// Private (admin only, with file upload)
-router.post("/", authMiddleware(["ADMIN"]), ProjectController.create);
-router.patch("/:id", authMiddleware(["ADMIN"]), ProjectController.update);
-router.delete("/:id", authMiddleware(["ADMIN"]), ProjectController.delete);
-
 router.patch(
   "/fix-thumbnails",
   authMiddleware(["ADMIN"]),
   ProjectController.fixOldUrls
 );
+
+// Private (admin only, with file upload)
+router.post("/", authMiddleware(["ADMIN"]), ProjectController.create);
+router.patch("/:id", authMiddleware(["ADMIN"]), ProjectController.update);
+router.delete("/:id", authMiddleware(["ADMIN"]), ProjectController.delete);
+
+
 
 export default router;
