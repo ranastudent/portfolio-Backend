@@ -18,8 +18,8 @@ router.get("/", ProjectController.getAll);
 router.get("/:id", ProjectController.getById);
 
 // Private (admin only, with file upload)
-router.post("/", authMiddleware, upload.single("thumbnail"), ProjectController.create);
-router.patch("/:id", authMiddleware, upload.single("thumbnail"), ProjectController.update);
-router.delete("/:id", authMiddleware, ProjectController.delete);
+router.post("/", authMiddleware(["ADMIN"]), upload.single("thumbnail"), ProjectController.create);
+router.patch("/:id", authMiddleware(["ADMIN"]), upload.single("thumbnail"), ProjectController.update);
+router.delete("/:id", authMiddleware(["ADMIN"]), ProjectController.delete);
 
 export default router;
