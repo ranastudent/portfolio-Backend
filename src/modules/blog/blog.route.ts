@@ -9,8 +9,8 @@ router.get("/", BlogController.getAll);
 router.get("/:id", BlogController.getById);
 
 // Private
-router.post("/", authMiddleware(), BlogController.create);
-router.put("/:id", authMiddleware(), BlogController.update);
-router.delete("/:id", authMiddleware(), BlogController.delete);
+router.post("/", authMiddleware(["ADMIN"]), BlogController.create);
+router.put("/:id", authMiddleware(["ADMIN"]), BlogController.update);
+router.delete("/:id", authMiddleware(["ADMIN"]), BlogController.delete);
 
 export default router;
