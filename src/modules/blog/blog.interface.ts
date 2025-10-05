@@ -1,6 +1,5 @@
 export interface CreateBlogInput {
   title: string;
-  description: string;
   content: string; // rich text
   tags?: string[];
   image?: string;
