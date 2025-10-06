@@ -101,6 +101,8 @@ model Resume {
   education   Json     // Array of { degree, institution, year }
   skills      String[] // List of skills
   projects    Json     // Array of { title, techStack, features, link }
+  hobbies     String?
+  interests   String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

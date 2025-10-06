@@ -14,10 +14,12 @@ export class ResumeService {
         name: data.name,
         designation: data.designation,
         contact: data.contact,
-        workExp: data.workExp ?? [],   // ✅ ensure JSON
+        workExp: data.workExp ?? [], // ✅ ensure JSON
         education: data.education ?? [],
         skills: data.skills ?? [],
         projects: data.projects ?? [],
+        hobbies: data.hobbies ?? "",
+        interests: data.interests ?? "",
       },
       create: {
         userId,
@@ -28,11 +30,16 @@ export class ResumeService {
         education: data.education ?? [],
         skills: data.skills ?? [],
         projects: data.projects ?? [],
+        hobbies: data.hobbies ?? "",
+        interests: data.interests ?? "",
       },
     });
   }
 
-  static async update(userId: string, data: Partial<z.infer<typeof resumeSchema>>) {
+  static async update(
+    userId: string,
+    data: Partial<z.infer<typeof resumeSchema>>
+  ) {
     return prisma.resume.update({
       where: { userId },
       data: {
@@ -43,11 +50,13 @@ export class ResumeService {
         ...(data.education && { education: data.education }),
         ...(data.skills && { skills: data.skills }),
         ...(data.projects && { projects: data.projects }),
+        ...(data.hobbies && { hobbies: data.hobbies }),
+        ...(data.interests && { interests: data.interests }),
       },
     });
   }
 
-    static async getByEmail(email: string) {
+  static async getByEmail(email: string) {
     return prisma.resume.findFirst({
       where: {
         user: {
@@ -59,7 +68,6 @@ export class ResumeService {
       },
     });
   }
-
 
   static async delete(userId: string) {
     return prisma.resume.delete({
