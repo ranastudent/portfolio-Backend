@@ -11,5 +11,6 @@ export const updateBlogSchema = z.object({
   title: z.string().min(3).optional(),
   description: z.string().min(10).optional().or(z.literal("")), // allow empty
   content: z.string().min(20).optional(),
+  image: z.string().url("Image must be a valid URL").optional().or(z.literal("")),
   tags: z.array(z.string()).optional(),
 });
