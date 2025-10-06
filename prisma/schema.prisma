@@ -100,7 +100,7 @@ model Resume {
   workExp     Json     // Array of { company, role, duration, description }
   education   Json     // Array of { degree, institution, year }
   skills      String[] // List of skills
-  projects    Json     // Array of { title, techStack, features, link }
+  projects    Json     
   hobbies     String?
   interests   String?
 
