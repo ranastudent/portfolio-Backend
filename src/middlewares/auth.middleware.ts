@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import prisma from "../utils/prisma";
 
 interface JwtPayload {
-  id: string;
+  id: string;  // string
   role: string;
 }
 
