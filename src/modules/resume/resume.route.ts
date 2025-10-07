@@ -2,7 +2,7 @@ import { Router } from "express";
 import { ResumeController } from "./resume.controller";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 
-const router = Router();
+const router = Router(); //route
 
 // Auth required
 router.get("/", authMiddleware, ResumeController.get);
