@@ -5,18 +5,22 @@ import passport from "passport";
 import "./config/passport";
 import { errorHandler } from "./middlewares/error.middleware";
 
-
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:3000", // local dev
+  
+];
 
 app.use(
   cors({
-    origin: "*",
+    origin: allowedOrigins,
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(passport.initialize());
-
 
 // API routes
 app.use("/api", routes);
