@@ -9,6 +9,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000", // local dev
+  "https://porfolio-frontend-cw8s.vercel.app" //Live site
   
 ];
 
